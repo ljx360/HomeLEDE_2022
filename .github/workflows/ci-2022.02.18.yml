@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build HomeLede,2022.02.16-v2
+name: Build HomeLede,2022.02.18
 
 on:
   repository_dispatch:
@@ -70,19 +70,16 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/HomeLede
 
-    - name: Load custom configuration
+    - name: prepareCompile.sh
       working-directory: /workdir
       run: |
-        [ -e files ] && mv files openwrt/files
-        [ -e $CONFIG_FILE ] && cp $CONFIG_FILE openwrt/.config
+        #[ -e files ] && mv files openwrt/files
+        #[ -e $CONFIG_FILE ] && cp $CONFIG_FILE openwrt/.config
+        cd openwrt
+        chmod +x prepareCompile.sh
+        prepareCompile.sh
 
-    - name: Update feeds
-      working-directory: /workdir
-      run: cd openwrt && ./scripts/feeds update -a
 
-    - name: Install feeds
-      working-directory: /workdir
-      run: cd openwrt && ./scripts/feeds install -a
 
 
 
