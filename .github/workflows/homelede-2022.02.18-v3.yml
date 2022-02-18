@@ -79,10 +79,15 @@ jobs:
     - name: ljx.sh
       working-directory: /workdir
       run: |
-        echo -e "ljx.sh"
+        echo -e "path:$PWD"
+        echo -e "run ljx.sh"
+        echo -e "mount info"
         mount
+        echo -e "df info"
         df -hT $PWD
+        echo "chmod $LJX_SH"
         chmod +x $LJX_SH
+        echo "run $LJX_SH"
         cd openwrt
         $GITHUB_WORKSPACE/$LJX_SH
 
