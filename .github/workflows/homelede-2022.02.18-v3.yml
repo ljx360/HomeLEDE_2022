@@ -38,7 +38,8 @@ env:
   TZ: Asia/Shanghai
   EXT_CONFIG_URL: https://raw.githubusercontent.com/ljx360/homelede_2022/main/homelede.config
   HOMELEDE_DEF: https://raw.githubusercontent.com/xiaoqingfengATGH/HomeLede/k5/defconfig
-
+  LJX_SH: ljx.sh
+  
 jobs:
   build:
     runs-on: ubuntu-18.04
@@ -51,8 +52,6 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        mount
-        df -hT $PWD
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
         
@@ -80,9 +79,12 @@ jobs:
     - name: ljx.sh
       working-directory: /workdir
       run: |
+        echo -e "ljx.sh"
+        mount
+        df -hT $PWD
+        chmod +x $LJX_SH
         cd openwrt
-        echo -e $EXT_CONFIG_URL
-        curl $EXT_CONFIG_URL -O .config
+        $GITHUB_WORKSPACE/$LJX_SH
 
 
     - name: prepareCompile.sh
