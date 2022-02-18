@@ -33,6 +33,7 @@ env:
   UPLOAD_WETRANSFER: false
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
+  DST: openwrt
 
 jobs:
   build:
@@ -75,7 +76,9 @@ jobs:
       run: |
         #[ -e files ] && mv files openwrt/files
         #[ -e $CONFIG_FILE ] && cp $CONFIG_FILE openwrt/.config
+        echo -e "path:$(PWD)"
         cd openwrt
+        echo -e "path:$(PWD)"
         chmod +x prepareCompile.sh
         prepareCompile.sh
 
