@@ -52,6 +52,11 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        echo -e "load os"
+
+
+    - name: update os
+      run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
         
@@ -77,17 +82,22 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/HomeLede
 
     - name: ljx.sh
+      if: (github.event.inputs.ljx == 'true' && github.event.inputs.ljx != 'false')
       working-directory: /workdir
       run: |
         echo -e "path:$PWD"
         echo -e "run ljx.sh"
+        echo -e ""
         echo -e "mount info"
         mount
+        echo -e ""
         echo -e "df info"
         df -hT $PWD
-        echo "chmod $LJX_SH"
+        echo -e ""
+        echo -e "chmod $LJX_SH"
         chmod +x $LJX_SH
-        echo "run $LJX_SH"
+        #chmod +x $LJX_SH
+        echo -e "run $LJX_SH"
         cd openwrt
         $GITHUB_WORKSPACE/$LJX_SH
 
