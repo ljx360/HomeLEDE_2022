@@ -43,17 +43,20 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /workdir
+        sudo mkdir -p /workdir/openwrt
         sudo chown $USER:$GROUPS /workdir
 
     - name: ljx_config.sh
       working-directory: /workdir
       run: |
         echo -e "path:$PWD"
+        ls -lsahi
+        
+        echo -e "chmod $LJX_CONFIG_SH"
         chmod +x $LJX_CONFIG_SH
         
         cd openwrt
         echo -e "path:$PWD"
         
         echo -e "run $LJX_CONFIG_SH"
-        $GITHUB_WORKSPACE/openwrt/$LJX_CONFIG_SH
+        $GITHUB_WORKSPACE/$LJX_CONFIG_SH
