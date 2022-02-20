@@ -1,5 +1,8 @@
 #/bin/sh
 
+
+if [ -f .config ];then
+
 cat >>.config<<eof
 
 
@@ -129,3 +132,10 @@ CONFIG_PACKAGE_luci-app-familycloud=y
 
 
 eof
+
+
+else
+
+echo "miss .config"
+
+fi
