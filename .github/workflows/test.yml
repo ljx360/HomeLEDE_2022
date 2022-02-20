@@ -59,9 +59,9 @@ jobs:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     - name: SSH connection to Actions,ljx
-      uses: P3TERX/ssh2actions@v1.0.0
+      #uses: P3TERX/ssh2actions@v1.0.0
       #if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
-      if: (github.event.inputs.ljx == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ljx')
+      if: (github.event.inputs.ljx == 'true' && github.event.inputs.ljx  != 'false') || contains(github.event.action, 'ljx')
       run: |
         echo -e "run ljx.sh"
 
