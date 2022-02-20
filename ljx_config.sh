@@ -1,127 +1,218 @@
-#/bin/sh
-
-cat >>.config<<eof
-
-
-
-
-
-CONFIG_DEFAULT_dmesg=y
-CONFIG_DEFAULT_dnsmasq-full=y
-CONFIG_DEFAULT_docker=y
-CONFIG_DEFAULT_dockerd=y
-CONFIG_DEFAULT_dropbear=y
-
-CONFIG_DEFAULT_luci-app-hd-idle=y
-
-CONFIG_DEFAULT_luci-app-mwan3=y
-CONFIG_DEFAULT_luci-app-nlbwmon=y
-CONFIG_DEFAULT_luci-app-ramfree=y
-CONFIG_DEFAULT_luci-app-samba=y
-CONFIG_DEFAULT_luci-app-smartdns=y
-CONFIG_DEFAULT_luci-app-syncdial=y
-CONFIG_DEFAULT_luci-app-ttyd=y
-CONFIG_DEFAULT_luci-app-turboacc=y
-CONFIG_DEFAULT_luci-app-upnp=y
-CONFIG_DEFAULT_luci-app-vlmcsd=y
-CONFIG_DEFAULT_luci-app-vsftpd=y
-CONFIG_DEFAULT_luci-app-watchcat=y
-CONFIG_DEFAULT_luci-app-wireguard=y
-CONFIG_DEFAULT_luci-app-wol=y
-
-
-CONFIG_GRUB_IMAGES=y
-CONFIG_GRUB_EFI_IMAGES=y
-CONFIG_GRUB_CONSOLE=y
-CONFIG_GRUB_SERIAL="ttyS0"
-CONFIG_GRUB_BAUDRATE=115200
-# CONFIG_GRUB_FLOWCONTROL is not set
-CONFIG_GRUB_BOOTOPTS=""
-#CONFIG_GRUB_TIMEOUT="0"
-#CONFIG_GRUB_TITLE="HomeLede"
-
-
-CONFIG_GRUB_TIMEOUT="3"
-CONFIG_GRUB_TITLE="HomeLede,ljx,2022.02.20"
-
-
-# CONFIG_ISO_IMAGES is not set
-# CONFIG_QCOW2_IMAGES is not set
-# CONFIG_VDI_IMAGES is not set
-CONFIG_VMDK_IMAGES=y
-# CONFIG_VHDX_IMAGES is not set
-CONFIG_TARGET_IMAGES_GZIP=y
-
-
 #
-# Image Options
+# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
 #
-CONFIG_TARGET_KERNEL_PARTSIZE=16
-CONFIG_TARGET_ROOTFS_PARTSIZE=1000
-CONFIG_TARGET_ROOTFS_PARTNAME=""
-# CONFIG_TARGET_ROOTFS_PERSIST_VAR is not set
-# end of Target Images
-
-luci-app-lxc
-luci-app-frps
-luci-app-frpc
-luci-app-kodexplorer
-luci-app-minidlna
-
-CONFIG_OPENVPN_openssl_ENABLE_DEF_AUTH=y
-CONFIG_OPENVPN_openssl_ENABLE_FRAGMENT=y
-CONFIG_OPENVPN_openssl_ENABLE_LZ4=y
-CONFIG_OPENVPN_openssl_ENABLE_LZO=y
-CONFIG_OPENVPN_openssl_ENABLE_MULTIHOME=y
-CONFIG_OPENVPN_openssl_ENABLE_PF=y
-CONFIG_OPENVPN_openssl_ENABLE_PORT_SHARE=y
-CONFIG_OPENVPN_openssl_ENABLE_SMALL=y
-CONFIG_PACKAGE_UnblockNeteaseMusic=y
-CONFIG_PACKAGE_UnblockNeteaseMusicGo=y
-CONFIG_PACKAGE_adblock=y
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+# Description: Build OpenWrt using GitHub Actions
+#
 
 
-CONFIG_PACKAGE_kmod-usb-printer=y
-CONFIG_PACKAGE_kmod-wireguard=y
+#添加默认config
 
-CONFIG_PACKAGE_luci-app-adblock=y
-CONFIG_PACKAGE_luci-app-airplay2=y
-CONFIG_PACKAGE_luci-app-aliddns=y
-CONFIG_PACKAGE_luci-app-arpbind=y
-CONFIG_PACKAGE_luci-app-autoreboot=y
-CONFIG_PACKAGE_luci-app-baidupcs-web=y
+name: Build HomeLede,2022.02.20-v5
 
-CONFIG_PACKAGE_luci-app-kodexplorer=y
-CONFIG_PACKAGE_luci-app-lxc=y
-CONFIG_PACKAGE_luci-app-minidlna=y
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+        
+env:
+  REPO_URL: https://github.com/xiaoqingfengATGH/HomeLede.git
+  REPO_BRANCH: master
+  FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: homelede.config
+  #CONFIG_FILE: newifi-d2.config
+  DIY_P1_SH: diy-part1.sh
+  DIY_P2_SH: diy-part2.sh
+  UPLOAD_BIN_DIR: true
+  UPLOAD_FIRMWARE: true
+  UPLOAD_COWTRANSFER: false
+  UPLOAD_WETRANSFER: false
+  UPLOAD_RELEASE: true
+  TZ: Asia/Shanghai
+  EXT_CONFIG_URL: https://raw.githubusercontent.com/ljx360/homelede_2022/main/homelede.config
+  HOMELEDE_DEF: https://raw.githubusercontent.com/xiaoqingfengATGH/HomeLede/k5/defconfig
+  LJX_CONFIG_SH: ljx_config.sh
+  
+jobs:
+  build:
+    runs-on: ubuntu-20.04
 
-CONFIG_PACKAGE_luci-app-frpc=y
-CONFIG_PACKAGE_luci-app-frps=y
-CONFIG_PACKAGE_luci-app-guest-wifi=y
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
 
-CONFIG_PACKAGE_luci-app-kodexplorer=y
-CONFIG_PACKAGE_luci-app-lxc=y
-
-CONFIG_PACKAGE_luci-app-openclash=y
-CONFIG_PACKAGE_luci-app-openvpn=y
-CONFIG_PACKAGE_luci-app-openvpn-server=y
-
-CONFIG_PACKAGE_luci-app-mwan3=y
-CONFIG_PACKAGE_luci-app-mwan3helper=y
-
-CONFIG_PACKAGE_luci-app-nlbwmon=y
-
-CONFIG_PACKAGE_luci-app-chinadns-ng=y
-CONFIG_PACKAGE_luci-app-autoreboot=y
-CONFIG_PACKAGE_luci-app-baidupcs-web=y
-
-CONFIG_PACKAGE_luci-app-guest-wifi=y
-CONFIG_PACKAGE_luci-app-haproxy-tcp=y
-CONFIG_PACKAGE_luci-app-hd-idle=y
-CONFIG_PACKAGE_luci-app-homeconnect=y
-CONFIG_PACKAGE_luci-app-homeredirect=y
-
-CONFIG_PACKAGE_luci-app-familycloud=y
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        echo -e "load os"
 
 
-eof
+    - name: update os
+      run: |
+        echo -e "apt-get"
+        
+        #2022.02.20
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+
+    - name: Clone source code
+      working-directory: /workdir
+      run: |
+        df -hT $PWD
+        #git clone $REPO_URL -b $REPO_BRANCH openwrt
+        git clone $REPO_URL openwrt
+        echo -e "github path:$GITHUB_WORKSPACE"
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/HomeLede
+
+
+
+    - name: prepareCompile.sh
+      working-directory: /workdir
+      run: |
+        #[ -e files ] && mv files openwrt/files
+        #[ -e $CONFIG_FILE ] && cp $CONFIG_FILE openwrt/.config
+        echo -e "path:$PWD"
+        cd openwrt
+        echo -e "path:$PWD"
+        chmod +x prepareCompile.sh
+        $GITHUB_WORKSPACE/openwrt/prepareCompile.sh
+
+    - name: ljx_config.sh
+      working-directory: /workdir
+      run: |
+        echo -e "path:$PWD"
+        chmod +x $LJX_CONFIG_SH
+        
+        cd openwrt
+        echo -e "path:$PWD"
+        
+        echo -e "run $LJX_CONFIG_SH"
+        $GITHUB_WORKSPACE/openwrt/$LJX_CONFIG_SH
+
+    - name: SSH connection to Actions
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+
+
+    - name: Download package
+      id: package
+      run: |
+        cd openwrt
+        make defconfig
+        #make download V=s
+        make download -j8 V=s
+        #find dl -size -1024c -exec ls -l {} \;
+        #find dl -size -1024c -exec rm -f {} \;
+
+
+
+    - name: Compile the firmware
+      id: compile
+      run: |
+        cd openwrt
+        echo -e "proces $(nproc) thread compile"
+        make -j$(nproc) || make -j1 || make -j1 V=s
+        #make -j1 || make -j1 V=s
+        echo "::set-output name=status::success"
+        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
+        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
+    - name: Check space usage
+      if: (!cancelled())
+      run: df -hT
+
+    - name: Upload bin directory
+      uses: actions/upload-artifact@main
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: openwrt/bin
+
+    - name: Organize files
+      id: organize
+      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      run: |
+        cd openwrt/bin/targets/*/*
+        rm -rf packages
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "::set-output name=status::success"
+
+    - name: Upload firmware directory
+      uses: actions/upload-artifact@main
+      if: steps.organize.outputs.status == 'success' && !cancelled()
+      with:
+        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: ${{ env.FIRMWARE }}
+
+    - name: Upload firmware to cowtransfer
+      id: cowtransfer
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
+        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+        echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
+
+    - name: Upload firmware to WeTransfer
+      id: wetransfer
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
+        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
+        echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
+
+    - name: Generate release tag
+      id: tag
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+        touch release.txt
+        [ $UPLOAD_COWTRANSFER = true ] && echo "?? [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
+        [ $UPLOAD_WETRANSFER = true ] && echo "?? [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
+        echo "::set-output name=status::success"
+
+    - name: Upload firmware to release
+      uses: softprops/action-gh-release@v1
+      if: steps.tag.outputs.status == 'success' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
+        files: ${{ env.FIRMWARE }}/*
+
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 1
+        keep_minimum_runs: 3
+
+    - name: Remove old Releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      with:
+        keep_latest: 7
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
