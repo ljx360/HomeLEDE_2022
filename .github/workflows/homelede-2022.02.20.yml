@@ -96,13 +96,16 @@ jobs:
       working-directory: /workdir
       run: |
         echo -e "path:$PWD"
-        chmod +x $LJX_CONFIG_SH
+        ls -lsahi
+        
+        echo -e "chmod $LJX_CONFIG_SH"
+        chmod +x $GITHUB_WORKSPACE/$LJX_CONFIG_SH
         
         cd openwrt
         echo -e "path:$PWD"
         
         echo -e "run $LJX_CONFIG_SH"
-        $GITHUB_WORKSPACE/openwrt/$LJX_CONFIG_SH
+        $GITHUB_WORKSPACE/$LJX_CONFIG_SH
 
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
