@@ -11,7 +11,7 @@
 
 #添加默认config
 
-name: Build HomeLede,2022.02.20-v4
+name: Build HomeLede,2022.02.20-v5
 
 on:
   repository_dispatch:
@@ -96,9 +96,11 @@ jobs:
       working-directory: /workdir
       run: |
         echo -e "path:$PWD"
+        chmod +x $LJX_CONFIG_SH
+        
         cd openwrt
         echo -e "path:$PWD"
-        chmod +x $LJX_CONFIG_SH
+        
         echo -e "run $LJX_CONFIG_SH"
         $GITHUB_WORKSPACE/openwrt/$LJX_CONFIG_SH
 
