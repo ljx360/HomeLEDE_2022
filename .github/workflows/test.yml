@@ -1,0 +1,47 @@
+
+name: Build HomeLede,test
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+
+env:
+  REPO_URL: https://github.com/xiaoqingfengATGH/HomeLede.git
+  REPO_BRANCH: master
+  FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: homelede.config
+  #CONFIG_FILE: newifi-d2.config
+  DIY_P1_SH: diy-part1.sh
+  DIY_P2_SH: diy-part2.sh
+  UPLOAD_BIN_DIR: true
+  UPLOAD_FIRMWARE: true
+  UPLOAD_COWTRANSFER: false
+  UPLOAD_WETRANSFER: false
+  UPLOAD_RELEASE: true
+  TZ: Asia/Shanghai
+  EXT_CONFIG_URL: https://raw.githubusercontent.com/ljx360/homelede_2022/main/homelede.config
+  HOMELEDE_DEF: https://raw.githubusercontent.com/xiaoqingfengATGH/HomeLede/k5/defconfig
+  LJX_CONFIG_SH: ljx_config.sh
+
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: ljx_config.sh
+      working-directory: /workdir
+      run: |
+        echo -e "path:$PWD"
+        chmod +x $LJX_CONFIG_SH
+        
+        cd openwrt
+        echo -e "path:$PWD"
+        
+        echo -e "run $LJX_CONFIG_SH"
+        $GITHUB_WORKSPACE/openwrt/$LJX_CONFIG_SH
