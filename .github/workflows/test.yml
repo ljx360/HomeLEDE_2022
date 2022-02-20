@@ -61,7 +61,7 @@ jobs:
         ls -lsahi
         
         echo -e "chmod $LJX_CONFIG_SH"
-        chmod +x $LJX_CONFIG_SH
+        chmod +x $GITHUB_WORKSPACE/$LJX_CONFIG_SH
         
         cd openwrt
         echo -e "path:$PWD"
